@@ -24,26 +24,31 @@ suite('Functional Tests', function() {
         .end(function(err, res){
           
           //complete this one too
+         assert.isObject(res.body)
+         assert.property(res.body,'stockData')
+         assert.nestedProperty(res.body,'stockData.stock')
+         assert.nestedProperty(res.body,'stockData.price')
+         assert.nestedProperty(res.body,'stockData.like')
           
           done();
         });
       });
       
-      test('1 stock with like', function(done) {
+//       test('1 stock with like', function(done) {
         
-      });
+//       });
       
-      test('1 stock with like again (ensure likes arent double counted)', function(done) {
+//       test('1 stock with like again (ensure likes arent double counted)', function(done) {
         
-      });
+//       });
       
-      test('2 stocks', function(done) {
+//       test('2 stocks', function(done) {
         
-      });
+//       });
       
-      test('2 stocks with like', function(done) {
+//       test('2 stocks with like', function(done) {
         
-      });
+//       });
       
     });
 

@@ -4,12 +4,29 @@ var express     = require('express');
 var bodyParser  = require('body-parser');
 var expect      = require('chai').expect;
 var cors        = require('cors');
+const helmet=require('helmet');
 
 var apiRoutes         = require('./routes/api.js');
 var fccTestingRoutes  = require('./routes/fcctesting.js');
 var runner            = require('./test-runner');
 
+var MongoClient = require("mongodb").MongoClient;
+
+const uri = `mongodb://${process.env.DBUSER}:${
+  process.env.DBPASSWD
+}@ds063124.mlab.com:63124/fcc`;
+
+
 var app = express();
+
+
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'"]
+  }
+}))
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
@@ -18,6 +35,13 @@ app.use(cors({origin: '*'})); //For FCC testing purposes only
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+MongoClient.connect(uri, (err, db) => {
+  if (err) console.log("Database error:  " + err);
+
+  console.log("Database connected");
+  
+  
 //Index page (static HTML)
 app.route('/')
   .get(function (req, res) {
@@ -28,7 +52,7 @@ app.route('/')
 fccTestingRoutes(app);
 
 //Routing for API 
-apiRoutes(app);  
+apiRoutes(app,db);  
     
 //404 Not Found Middleware
 app.use(function(req, res, next) {
@@ -54,4 +78,7 @@ app.listen(process.env.PORT || 3000, function () {
   }
 });
 
+  
+  
+})
 module.exports = app; //for testing
